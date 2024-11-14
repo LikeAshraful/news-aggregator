@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 
 class ArticleController extends Controller {
     public function index(Request $request) {
+
         $articles = Article::query();
 
         if ($request->has('keyword')) {
-            $articles->where('title', 'like', '%' . $request->keyword . '%');
+            $articles->where('title', 'like', '%' . $request->keyword . '%')
+                    ->orWhere('content', 'like', '%' . $request->keyword . '%');
         }
 
         if ($request->has('category')) {
@@ -25,12 +27,28 @@ class ArticleController extends Controller {
             $articles->whereDate('created_at', $request->date);
         }
 
-        return response()->json($articles->paginate(10));
+        return response()->json([
+            'status'  => true,
+            'message' => 'Articles retrieved successfully',
+            'data'    => $articles->get(),
+        ], 200);
     }
 
     public function show($id) {
-        $article = Article::findOrFail($id);
-        return response()->json($article);
+        $article = Article::find($id);
+
+        if (!$article) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Article not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Article retrieved successfully',
+            'data'    => $article,
+        ], 200);
     }
 
 }
