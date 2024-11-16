@@ -27,10 +27,16 @@ class ArticleController extends Controller {
             $articles->whereDate('created_at', $request->date);
         }
 
+        if($request->has('page')) {
+           $articles = $articles->paginate($request->page);
+        } else {
+           $articles = $articles->get();
+        }
+
         return response()->json([
             'status'  => true,
             'message' => 'Articles retrieved successfully',
-            'data'    => $articles->get(),
+            'data'    => $articles,
         ], 200);
     }
 

@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\Article;
-use App\Services\Contracts\NewsSource;
 use Illuminate\Support\Facades\Http;
+use App\Services\Contracts\NewsSource;
 
 class NewsFetcherService {
     protected $sources = [];
@@ -21,12 +21,17 @@ class NewsFetcherService {
                 'params'  => ['api-key' => config('services.ny_times.key')],
                 'adapter' => \App\Services\NyTimesApiService::class,
             ],
+            [
+                'url'     => config('services.guardian.url'),
+                'params'  => ['api-key' => config('services.guardian.key'), 'show-fields' => 'headline,thumbnail,body,author,byline'],
+                'adapter' => \App\Services\GuardianApiService::class,
+             ]
+
         ];
     }
 
     public function fetchAndSaveNews() {
         try {
-
             foreach ($this->sources as $source) {
                 $response = Http::get($source['url'], $source['params']);
 
@@ -41,6 +46,10 @@ class NewsFetcherService {
                     }
                     if ($source['url'] === config('services.ny_times.url')) {
                         $rawData['articles'] = $rawData['results'];
+                    }
+
+                    if($source['url'] === config('services.guardian.url')) {
+                        $rawData['articles'] = $rawData['response']['results'];
                     }
 
                     $this->processFetchedData($rawData['articles'], new $source['adapter']);
@@ -66,7 +75,6 @@ class NewsFetcherService {
                 $normalizedData
             );
         }
-
     }
 
 }
