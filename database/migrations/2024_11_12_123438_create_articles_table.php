@@ -14,8 +14,10 @@ return new class extends Migration {
             $table->string('title');
             $table->text('content');
             $table->string('source');
-            $table->string('category');
+            $table->string('img_url')->nullable();
+            $table->string('category')->nullable();
             $table->string('author')->nullable();
+            $table->timestamp('publish_at')->nullable();
             $table->timestamps();
         });
     }
