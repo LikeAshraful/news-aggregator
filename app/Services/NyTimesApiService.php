@@ -18,4 +18,9 @@ class NyTimesApiService implements NewsSource
             'publish_at' => $rawData['published_date'] ?? '',
         ];
     }
+
+    public function processResponse(array $response): array
+    {
+        return $response['results'] ?? [];
+    }
 }

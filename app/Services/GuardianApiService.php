@@ -18,4 +18,9 @@ class GuardianApiService implements NewsSource
             'publish_at' => $rawData['webPublicationDate'] ?? '',
         ];
     }
+
+    public function processResponse(array $response): array
+    {
+        return $response['response']['results'] ?? [];
+    }
 }

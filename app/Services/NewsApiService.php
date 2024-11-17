@@ -18,4 +18,11 @@ class NewsApiService implements NewsSource
             'publish_at' => $rawData['publishedAt'] ?? '',
         ];
     }
+
+    public function processResponse(array $response): array
+    {
+        return collect($response['articles'] ?? [])
+            ->filter(fn($item) => !collect($item)->contains('[Removed]'))
+            ->toArray();
+    }
 }

@@ -35,19 +35,23 @@ return [
         ],
     ],
 
-    'news_api' => [
-        'key' => env('NEWS_API_KEY'),
-        'url' => env('NEWS_API_URL'),
+    'news_sources' => [
+        'news_api' => [
+            'url'     => env('NEWS_API_URL'),
+            'params'  => ['apiKey' => env('NEWS_API_KEY'), 'q' => 'latest'],
+            'adapter' => \App\Services\NewsApiService::class,
+        ],
+        'ny_times' => [
+            'url'     => env('NY_TIMES_URL'),
+            'params'  => ['api-key' => env('NY_TIMES_KEY')],
+            'adapter' => \App\Services\NyTimesApiService::class,
+        ],
+        'guardian' => [
+            'url'     => env('GUARDIAN_API_URL'),
+            'params'  => ['api-key' => env('GUARDIAN_API_KEY'), 'show-fields' => 'headline,thumbnail,body,author,byline'],
+            'adapter' => \App\Services\GuardianApiService::class,
+        ],
     ],
-
-    'ny_times' => [
-        'key' => env('NY_TIMES_KEY'),
-        'url' => env('NY_TIMES_URL'),
-    ],
-
-    'guardian' => [
-        'key' => env('GUARDIAN_API_KEY'),
-        'url' => env('GUARDIAN_API_URL'),
-    ],
+    
 
 ];

@@ -6,13 +6,74 @@ use App\Models\Article;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller {
-    public function index(Request $request) {
 
+    /**
+     * @OA\SecurityScheme(
+     *     securityScheme="sanctum",
+     *     type="http",
+     *     scheme="bearer",
+     *     bearerFormat="JWT",
+     *     description="Use Sanctum-generated Bearer Token for authentication"
+     * )
+     */
+
+    /**
+     * @OA\Get(
+     *     path="/articles",
+     *     summary="Get a list of articles",
+     *     tags={"Articles"},
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="keyword",
+     *         in="query",
+     *         description="Keyword to search for",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="category",
+     *         in="query",
+     *         description="Category of article",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="source",
+     *         in="query",
+     *         description="Source of article",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="date",
+     *         in="query",
+     *         description="Date of article",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",     *         
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid request"
+     *     )
+     * )
+     */
+    public function index(Request $request) {
         $articles = Article::query();
 
         if ($request->has('keyword')) {
             $articles->where('title', 'like', '%' . $request->keyword . '%')
-                    ->orWhere('content', 'like', '%' . $request->keyword . '%');
+                ->orWhere('content', 'like', '%' . $request->keyword . '%');
         }
 
         if ($request->has('category')) {
@@ -27,10 +88,10 @@ class ArticleController extends Controller {
             $articles->whereDate('created_at', $request->date);
         }
 
-        if($request->has('page')) {
-           $articles = $articles->paginate($request->page);
+        if ($request->has('page')) {
+            $articles = $articles->paginate($request->page);
         } else {
-           $articles = $articles->get();
+            $articles = $articles->get();
         }
 
         return response()->json([
@@ -40,6 +101,33 @@ class ArticleController extends Controller {
         ], 200);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/articles/{id}",
+     *     summary="Get an article",
+     *     tags={"Articles"},
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of article to return",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",     *         
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid request"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Article not found"
+     *     )
+     * )
+     */
     public function show($id) {
         $article = Article::find($id);
 
@@ -56,5 +144,4 @@ class ArticleController extends Controller {
             'data'    => $article,
         ], 200);
     }
-
 }

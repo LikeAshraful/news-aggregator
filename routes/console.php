@@ -10,5 +10,5 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command('fetch:news')
-    ->hourly()
+    ->everyFifteenMinutes()
     ->appendOutputTo(storage_path('logs/fetch-news.log'));
